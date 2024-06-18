@@ -3,6 +3,9 @@ const app = express()
 const port = 5000
 const cors = require('cors')
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://127.0.0.1:27017/hospital');
 
@@ -28,20 +31,53 @@ app.get('/', (req, res) => {
 })
 
 const DoctorModel = mongoose.model('doctor', { name: String, experience: String, gender: String, phone: String, password: String, speciality: String });
-
-app.get('/doctor', cors(),async (req, res) => {
+// getting all doctor list get request
+app.get('/doctor', cors(), async (req, res) => {
     const data = await DoctorModel.find()
     console.log(data)
     res.json(data)
 })
 
-const PatientModel = mongoose.model('patient', { name: String, gender: String, phone: Number, password: String, age: Number });
+app.post('/doctor', cors(),async (req, res) => {
+    console.log("request", req.body);
+    const {name, password, speciality, experience, gender,phone} = req.body;
+    const doctorObj = new DoctorModel({
+        name:name, password:password, speciality:speciality, experience:experience, gender:gender, phone: phone 
+    })
+    const result = await doctorObj.save()
+    // console.log(result)
+    res.json(result)
 
-app.get('/patients', cors(), async (req, res) => {
+})
+
+
+const PatientModel = mongoose.model('patient', { name: String, problem: String, experience: Number, gender: String, age: Number });
+
+app.get('/patient', cors(), async (req, res) => {
     const data = await PatientModel.find()
     console.log(data)
     res.json(data)
 })
+
+app.post('/patient', cors(), async (req, res) => {
+    console.log("request", req.body);
+    const{name, problem, experience, gender, age} = req.body;
+    const patientObj = new PatientModel({
+        name: name, problem:problem, experience:experience, gender:gender, age:age
+    })
+    const result = await patientObj.save()
+    console.log(result)
+    res.json(result)
+})
+
+const AdminModel = mongoose.model('admin', { name: String, gender: String, phone: Number, password: String, age: Number });
+
+app.get('/admin', cors(), async (req, res) => {
+    const data = await AdminModel.find()
+    console.log(data)
+    res.json(data)
+})
+
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
