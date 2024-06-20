@@ -50,6 +50,7 @@ app.post('/doctor', cors(),async (req, res) => {
 
 })
 
+// for patient
 
 const PatientModel = mongoose.model('patient', { name: String, problem: String, experience: Number, gender: String, age: Number });
 
@@ -70,7 +71,8 @@ app.post('/patient', cors(), async (req, res) => {
     res.json(result)
 })
 
-const AdminModel = mongoose.model('admin', { name: String, gender: String, phone: Number, password: String, age: Number });
+// for admin
+const AdminModel = mongoose.model('admin', { name: String, gender: String, dept: String, password: String, age: Number, experience: String });
 
 app.get('/admin', cors(), async (req, res) => {
     const data = await AdminModel.find()
@@ -78,7 +80,27 @@ app.get('/admin', cors(), async (req, res) => {
     res.json(data)
 })
 
+app.post('/admin', cors(), async(req, res) => {
+    console.log("request", req.body);
+    const{name, dept, experience, gender, age, password} = req.body;
+    const adminObj = new AdminModel({
+        name: name, dept: dept, experience: experience, gender: gender, age: age, password: password
+    })
+    const result = await adminObj.save()
+    console.log(result)
+    res.json(result)
+})
+
+
+
+
+
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
+
+
+
+
+
